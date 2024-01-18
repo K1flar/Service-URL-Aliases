@@ -3,9 +3,10 @@ package config
 import "github.com/ilyakaznacheev/cleanenv"
 
 type Config struct {
-	Env     string  `yaml:"env" env-default:"local"`
-	Server  Server  `yaml:"server"`
-	Storage Storage `yaml:"storage"`
+	Env         string  `yaml:"env" env-default:"local"`
+	Server      Server  `yaml:"server"`
+	Storage     Storage `yaml:"storage"`
+	GenAliasLen int     `yaml:"genAliasLen" env-default:"6"`
 }
 
 type Server struct {

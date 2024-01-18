@@ -5,3 +5,5 @@ server:
 
 storage:
     path: "../storage/storage.db"
+
+genAliasLen: 6
