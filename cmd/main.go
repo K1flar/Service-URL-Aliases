@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"os"
 	"restapi/internal/config"
-	"restapi/internal/handlers"
+	"restapi/internal/handlers/redirect"
+	"restapi/internal/handlers/url/save"
 	"restapi/internal/logger"
 	"restapi/internal/repository/sqlite"
 	"restapi/internal/services"
@@ -32,12 +33,11 @@ func main() {
 	}
 
 	urlService := services.NewURLService(repository, cfg, log)
-	urlHanlder := handlers.NewURLHandler(urlService, log)
 
 	router := chi.NewRouter()
 
-	router.Post("/url", http.HandlerFunc(urlHanlder.SaveURL))
-	router.Get("/{alias}", http.HandlerFunc(urlHanlder.Redirect))
+	router.Post("/url", save.New(log, urlService))
+	router.Get("/{alias}", redirect.New(log, urlService))
 
 	srv := &http.Server{
 		Addr:    cfg.Server.Host + ":" + cfg.Server.Port,
