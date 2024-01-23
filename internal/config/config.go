@@ -10,8 +10,9 @@ type Config struct {
 }
 
 type Server struct {
-	Host string `yaml:"host" env-default:"localhost"`
-	Port string `yaml:"port" env-default:"8080"`
+	Host   string `yaml:"host" env-default:"localhost"`
+	Port   string `yaml:"port" env-default:"8080"`
+	Secret string `env:"SECRET" env-required:"true"`
 }
 
 type Storage struct {

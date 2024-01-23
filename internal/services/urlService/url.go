@@ -1,4 +1,4 @@
-package services
+package urlservice
 
 import (
 	"fmt"
@@ -48,3 +48,5 @@ func (s *URLService) GetURL(alias string) (string, error) {
 	}
 	return url, nil
 }
+
+//TODO: DeleteURLa

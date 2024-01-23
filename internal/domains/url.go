@@ -1,4 +1,4 @@
-package domain
+package domains
 
 type URL struct {
 	ID     uint32 `json:"id,omitempty"`

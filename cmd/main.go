@@ -10,7 +10,7 @@ import (
 	"restapi/internal/handlers/url/save"
 	"restapi/internal/logger"
 	"restapi/internal/repository/sqlite"
-	"restapi/internal/services"
+	urlservice "restapi/internal/services/urlService"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -32,7 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	urlService := services.NewURLService(repository, cfg, log)
+	urlService := urlservice.NewURLService(repository, cfg, log)
 
 	router := chi.NewRouter()
 

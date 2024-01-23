@@ -2,15 +2,14 @@ package sqlite
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
-	"restapi/internal/repository"
-
-	"github.com/mattn/go-sqlite3"
+	urlrepo "restapi/internal/repository/sqlite/urlRepo"
+	userrepo "restapi/internal/repository/sqlite/userRepo"
 )
 
 type Repository struct {
-	db *sql.DB
+	*urlrepo.URLRepository
+	*userrepo.UserRepository
 }
 
 func New(path string) (*Repository, error) {
@@ -64,48 +63,7 @@ func New(path string) (*Repository, error) {
 
 	tx.Commit()
 	return &Repository{
-		db: db,
+		urlrepo.NewURLRepository(db),
+		userrepo.NewUserRepository(db),
 	}, nil
-}
-
-func (r *Repository) SaveURL(url, alias string, userID uint32) error {
-	fn := `repository.sqlite.SaveURL`
-	stmt, err := r.db.Prepare(`
-		INSERT INTO url(url, alias, user_id)
-		VALUES (?, ?, ?);
-	`)
-	if err != nil {
-		return fmt.Errorf("%s: %w", fn, err)
-	}
-	_, err = stmt.Exec(url, alias, userID)
-	if err != nil {
-		if sqliteErr, ok := err.(sqlite3.Error); ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
-			return fmt.Errorf("%s: %w", fn, repository.ErrURLExists)
-		}
-
-		return fmt.Errorf("%s: %w", fn, err)
-	}
-	return nil
-}
-
-func (r *Repository) GetURL(alias string) (string, error) {
-	fn := `repository.sqlite.GetURL`
-	stmt, err := r.db.Prepare(`
-		SELECT url FROM url
-		WHERE alias = ?
-	`)
-	if err != nil {
-		return "", fmt.Errorf("%s: %w", fn, err)
-	}
-
-	var url string
-	err = stmt.QueryRow(alias).Scan(&url)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return "", fmt.Errorf("%s: %w", fn, repository.ErrURLNotFound)
-		}
-
-		return "", fmt.Errorf("%s: %w", fn, err)
-	}
-	return url, nil
 }
