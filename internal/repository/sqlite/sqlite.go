@@ -28,7 +28,7 @@ func New(path string) (*Repository, error) {
 	stmt, err := db.Prepare(`
 		CREATE TABLE IF NOT EXISTS users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			login TEXT NOT NULL,
+			login TEXT NOT NULL UNIQUE,
 			password TEXT NOT NULL,
 			email TEXT NOT NULL UNIQUE
 		);

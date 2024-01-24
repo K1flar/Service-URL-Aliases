@@ -7,7 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"restapi/internal/domain"
+	"restapi/internal/domains"
 	"restapi/internal/handlers"
 	"restapi/internal/repository"
 )
@@ -22,14 +22,14 @@ func New(log *slog.Logger, s URLSaverService) http.HandlerFunc {
 		//TODO: взять id пользователя из контекста запроса
 		b, err := io.ReadAll(r.Body)
 		if err != nil {
-			handlers.JSONError(w, http.StatusBadRequest, err.Error(), log)
+			handlers.JSONError(w, http.StatusInternalServerError, "unknown error", log)
 			return
 		}
 
-		url := domain.URL{}
+		url := domains.URL{}
 		err = json.Unmarshal(b, &url)
 		if err != nil {
-			handlers.JSONError(w, http.StatusBadRequest, err.Error(), log)
+			handlers.JSONError(w, http.StatusBadRequest, "bad request", log)
 			return
 		}
 
