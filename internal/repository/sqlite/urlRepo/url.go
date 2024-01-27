@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"restapi/internal/domains"
 	"restapi/internal/repository"
 
 	"github.com/mattn/go-sqlite3"
@@ -39,26 +40,26 @@ func (r *URLRepository) SaveURL(url, alias string, userID uint32) error {
 	return nil
 }
 
-func (r *URLRepository) GetURL(alias string) (string, error) {
+func (r *URLRepository) GetURL(alias string) (*domains.URL, error) {
 	fn := `repository.sqlite.URLRepository.GetURL`
 	stmt, err := r.db.Prepare(`
-		SELECT url FROM url
+		SELECT id, url, alias, user_id FROM url
 		WHERE alias = ?
 	`)
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", fn, err)
+		return nil, fmt.Errorf("%s: %w", fn, err)
 	}
 
-	var url string
-	err = stmt.QueryRow(alias).Scan(&url)
+	var url domains.URL
+	err = stmt.QueryRow(alias).Scan(&url.ID, &url.URL, &url.Alias, &url.UserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", fmt.Errorf("%s: %w", fn, repository.ErrURLNotFound)
+			return nil, fmt.Errorf("%s: %w", fn, repository.ErrURLNotFound)
 		}
 
-		return "", fmt.Errorf("%s: %w", fn, err)
+		return nil, fmt.Errorf("%s: %w", fn, err)
 	}
-	return url, nil
+	return &url, nil
 }
 
 func (r *URLRepository) DeleteURL(alias string) error {

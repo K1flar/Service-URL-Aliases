@@ -19,7 +19,12 @@ type URLSaverService interface {
 
 func New(log *slog.Logger, s URLSaverService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//TODO: взять id пользователя из контекста запроса
+		user, ok := r.Context().Value("user").(domains.User)
+		if !ok {
+			handlers.JSONError(w, http.StatusForbidden, "forbidden", log)
+			return
+		}
+
 		b, err := io.ReadAll(r.Body)
 		if err != nil {
 			handlers.JSONError(w, http.StatusInternalServerError, "unknown error", log)
@@ -32,6 +37,7 @@ func New(log *slog.Logger, s URLSaverService) http.HandlerFunc {
 			handlers.JSONError(w, http.StatusBadRequest, "bad request", log)
 			return
 		}
+		url.UserID = user.ID
 
 		alias, err := s.SaveURL(url.URL, url.Alias, url.UserID)
 		if err != nil {

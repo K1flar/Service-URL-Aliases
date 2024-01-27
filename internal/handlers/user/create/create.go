@@ -37,7 +37,7 @@ func New(log *slog.Logger, s UserCreatorService) http.HandlerFunc {
 
 		token, err := s.CreateUser(&user)
 		if err != nil {
-			if errors.Is(err, service.ErrUserAlredyExists) {
+			if errors.Is(err, service.ErrUserExists) {
 				handlers.JSONError(w, http.StatusConflict, "user alredy exists", log)
 				return
 			}

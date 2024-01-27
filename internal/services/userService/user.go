@@ -19,7 +19,7 @@ type UserService struct {
 }
 
 type UserRepo interface {
-	CreateUser(login, password, email string) error
+	CreateUser(login, password, email string) (*domains.User, error)
 	GetByEmail(email string) (*domains.User, error)
 	GetByLogin(login string) (*domains.User, error)
 }
@@ -34,10 +34,10 @@ func NewUserService(repo UserRepo, cfg *config.Config, log *slog.Logger) *UserSe
 
 func (s *UserService) CreateUser(user *domains.User) (string, error) {
 	fn := `services.UserService.CreateUser`
-	err := s.repo.CreateUser(user.Login, user.Password, user.Email)
+	user, err := s.repo.CreateUser(user.Login, user.Password, user.Email)
 	if err != nil {
 		if errors.Is(err, repository.ErrUserExists) {
-			return "", service.ErrUserAlredyExists
+			return "", fmt.Errorf("%s: %w", fn, service.ErrUserExists)
 		}
 		return "", fmt.Errorf("%s: %w", fn, err)
 	}
