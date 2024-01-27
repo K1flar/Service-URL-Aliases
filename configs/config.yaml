@@ -2,3 +2,8 @@ env: "local"
 server:
     host: "localhost"
     port: 8080
+
+storage:
+    path: "../storage/storage.db"
+
+genAliasLen: 6
